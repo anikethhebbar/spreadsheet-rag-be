@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import query_routes, file_routes
+from routes import query_routes, file_routes
+from config import Settings
 
-app = FastAPI(title="RAG API", description="Natural Language to SQL Query API")
+app = FastAPI()
+settings = Settings()
 
-# Configure CORS
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,9 +16,9 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(query_routes.router, prefix="/api/v1", tags=["queries"])
-app.include_router(file_routes.router, prefix="/api/v1/files", tags=["files"])
+app.include_router(query_routes.router)
+app.include_router(file_routes.router)
 
-@app.get("/")
-async def root():
-    return {"message": "Welcome to RAG API"} 
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True) 
